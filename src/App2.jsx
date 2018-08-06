@@ -44,7 +44,7 @@ class App extends Component {
           
           <button onClick={this.authenticate}>Login</button> 
           <button onClick={this.signout}>signout </button>
-         
+         {/* <Switch> */}
             <Route path="/" component={Landing} exact/>
             <Route path='/:user' render={props => 
               <User {...props} 
@@ -52,9 +52,8 @@ class App extends Component {
                 user={this.state.user}
               />} />
             
-            <Route path='/404/does-not-exist' component={NoUser} exact/>
-            <Route path='/404/user-has-no-trips' component={UserHasNoTrips} exact/>
-         
+            {/* <Route component={Poop} />
+         </Switch> */}
         </div>
       
     );

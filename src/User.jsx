@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {withRouter, Route, Switch, Link} from 'react-router-dom';
+import {withRouter, Route, Switch, Link, Redirect} from 'react-router-dom';
 
 
 // import PrivateRoute from './PrivateRoute';
@@ -10,25 +10,48 @@ const BillingForm = () => <h1>Billing Form</h1>
 const TripOpen = () => <h1>Trip open</h1>
 const AccountForm = () => <h1>Account Form</h1>
 const Archived = () => <h1>Archived</h1>
+const NoUser = () => <h1>No User</h1>
+const UserHasNoTrips = () => <h1>User Has No Trips</h1>
+
+const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
+ <React.Fragment>
+   console.log(isAuthenticated)
+  <Route
+    {...rest}
+    render={props =>
+      isAuthenticated ? (
+        <Component {...props} />
+      ) : (
+        <Redirect
+          to={{
+            pathname: "/",
+            state: { from: props.location }
+          }}
+        />
+      )
+    }
+  exact/>
+  </React.Fragment>
+);
 
 class User extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      hasTrips: true,
+      hasTrips: false,
       noUser: false,
-      data: true
+      data: false
       }
 
   }
   componentWillMount() {
       if (this.state.data === false && this.props.isAuthenticated === false) {
-        this.props.history.push('/404/user-has-no-trips')
+        this.props.history.push(`/${this.props.match.params.user}/error/user-has-no-trips`)
       } else {
         this.setState({ hasTrips: true, data: true })
       }
       if (this.props.user !== this.props.match.params.user) {
-        this.props.history.push('/404/does-not-exist')
+        this.props.history.push(`/${this.props.match.params.user}/error/does-not-exist`)
       }
    
   }
@@ -43,11 +66,13 @@ class User extends Component {
         <Link to={`/${this.props.match.params.user}/trip/1`}>Trip open</Link>
         <Switch>
           <Route path="/:user" component={MainView} exact/>
-          <Route path="/:user/archived" component={Archived}  exact/>
-          <Route path="/:user/create" component={Create} exact/>
-          <Route path="/:user/billing" component={BillingForm} exact/>
-          <Route path="/:user/settings" component={AccountForm} exact/>
-          <Route path="/:user/trip/:slug" component={TripOpen} exact/>
+          <PrivateRoute path="/:user/archived" component={Archived} isAuthenticated={Boolean(this.props.isAuthenticated)} exact/>
+          <PrivateRoute path="/:user/create" component={Create} isAuthenticated={Boolean(this.props.isAuthenticated)}exact/>
+          <PrivateRoute path="/:user/billing" component={BillingForm} isAuthenticated={Boolean(this.props.isAuthenticated)} exact/>
+          <PrivateRoute path="/:user/settings" component={AccountForm} isAuthenticated={Boolean(this.props.isAuthenticated)} exact/>
+          <Route path="/:user/trip/:slug" component={TripOpen} />
+          <Route path='/:user/error/does-not-exist' component={NoUser}/>
+          <Route path='/:user/error/user-has-no-trips' component={UserHasNoTrips} />
           <Route component={Backwood404} />
         </Switch>
       </div>
