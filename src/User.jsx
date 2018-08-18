@@ -14,8 +14,6 @@ const NoUser = () => <h1>No User</h1>
 const UserHasNoTrips = () => <h1>User Has No Trips</h1>
 
 const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
- <React.Fragment>
-   console.log(isAuthenticated)
   <Route
     {...rest}
     render={props =>
@@ -31,7 +29,6 @@ const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
       )
     }
   exact/>
-  </React.Fragment>
 );
 
 class User extends Component {
